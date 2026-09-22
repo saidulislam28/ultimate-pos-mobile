@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, useColorScheme } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, useColorScheme, Animated, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
 import { fetchCategoriesApi, fetchBrandsApi, ProductFilters } from '@/api/product';
+
+const { width } = Dimensions.get('window');
 
 interface FilterItem {
   id: string | number;
@@ -24,9 +26,14 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
   const [brands, setBrands] = useState<FilterItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Accordion state
-  const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(true);
-  const [isBrandsExpanded, setIsBrandsExpanded] = useState(true);
+  // Accordion state - closed by default
+  const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
+  const [isBrandsExpanded, setIsBrandsExpanded] = useState(false);
+
+  // Animation state
+  const [showModal, setShowModal] = useState(visible);
+  const slideAnim = useRef(new Animated.Value(width)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // Local selection state (comma-separated strings)
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -44,6 +51,43 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
       setSelectedBrands(currentFilters.brand_id ? currentFilters.brand_id.split(',') : []);
     }
   }, [visible, currentFilters]);
+
+  useEffect(() => {
+    if (visible) {
+      setShowModal(true);
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        })
+      ]).start();
+    } else {
+      // Fallback timeout in case animation callback drops
+      const timeout = setTimeout(() => setShowModal(false), 300);
+      
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: width,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        })
+      ]).start(() => {
+        clearTimeout(timeout);
+        setShowModal(false);
+      });
+    }
+  }, [visible]);
 
   const loadFilters = async () => {
     if (categories.length > 0 && brands.length > 0) return; // Already loaded
@@ -112,15 +156,29 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
   );
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
+    <Modal visible={showModal} animationType="none" transparent={true} onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <TouchableOpacity style={styles.overlayBackground} onPress={onClose} activeOpacity={1} />
+        <Animated.View style={[styles.overlayBackgroundWrapper, { opacity: fadeAnim }]}>
+          <TouchableOpacity style={styles.overlayBackground} onPress={onClose} activeOpacity={1} />
+        </Animated.View>
         
-        <View style={[styles.drawer, { backgroundColor: themeColors.background }]}>
+        <Animated.View 
+          style={[
+            styles.drawer, 
+            { 
+              backgroundColor: themeColors.background,
+              transform: [{ translateX: slideAnim }]
+            }
+          ]}
+        >
           <SafeAreaView style={styles.safeArea}>
             <View style={[styles.header, { borderBottomColor: themeColors.backgroundElement }]}>
               <Text style={[styles.headerTitle, { color: themeColors.text }]}>Filters</Text>
-              <TouchableOpacity onPress={onClose}>
+              <TouchableOpacity 
+                onPress={onClose} 
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                style={{ padding: 4 }}
+              >
                 <Ionicons name="close" size={24} color={themeColors.text} />
               </TouchableOpacity>
             </View>
@@ -188,7 +246,7 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
               </TouchableOpacity>
             </View>
           </SafeAreaView>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -198,6 +256,9 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     flexDirection: 'row',
+  },
+  overlayBackgroundWrapper: {
+    flex: 1,
   },
   overlayBackground: {
     flex: 1,
