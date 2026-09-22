@@ -56,7 +56,7 @@ Run `npx expo start` to test on an emulator or physical device via Expo Go.
 
 ### 1. API Structure & The Connector Module
 The `Connector` module provides RESTful endpoints prefixed with `/connector/api`.
-- **Base URL:** `https://your-domain.com/connector/api` (Must be from .env file)
+- **Base URL:** `https://your-domain.com/connector/api`
 - **Standard Response Format:** Most endpoints return a JSON structure containing a `data` array/object, and optionally `meta` and `links` for pagination.
 - **Headers Required:** 
   - `Accept: application/json`
@@ -72,9 +72,20 @@ Create an Axios instance (`src/api/client.ts`) with interceptors to automaticall
 
 Authentication in the mobile app must mirror the React/Blade versions, utilizing token-based authentication (Laravel Passport/Sanctum).
 
-### 1. Login Implementation
-- **UI:** Create a Login screen (`app/login.tsx`) with Email and Password fields.
-- **Action:** Send a POST request to your backend's token endpoint (e.g., `/oauth/token` or the designated connector login route).
+### 1. Login Implementation (Oauth Token)
+- **Endpoint:** The correct endpoint for logging in is **`/oauth/token`** (NOT `connector/api/login`). The API uses standard Laravel Passport for authentication.
+- **Request Payload:** It requires a `POST` request with the following body (JSON or form-data):
+  ```json
+  {
+    "grant_type": "password",
+    "client_id": "YOUR_PASSPORT_CLIENT_ID",
+    "client_secret": "YOUR_PASSPORT_CLIENT_SECRET",
+    "username": "user@example.com",
+    "password": "user_password"
+  }
+  ```
+  *(Note: You can generate the Client ID and Secret by running `php artisan passport:install` on your server).*
+- **UI:** Create a Login screen (`app/auth/login.tsx`) with Username/Email and Password fields.
 - **Storage:** Upon success, extract the `access_token` from the response and store it securely using `expo-secure-store` (never use standard `AsyncStorage` for auth tokens).
 
 ### 2. Fetching User Profile & Permissions
