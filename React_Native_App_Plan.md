@@ -128,6 +128,17 @@ With the foundation built, we can connect the specific POS features using the Co
 - **Endpoint:** GET `/connector/api/product`
 - **Implementation:** Build a `ProductList` screen using React Native's `FlatList`. Implement pagination (handling the `meta.current_page` and `meta.last_page` from the API). Add a search bar that passes a search query parameter to the API.
 
+- **Query Parameters (Filtering & Searching):**
+  - `name`: String to search for in the product name.
+  - `sku`: String to search for in the product SKU.
+  - `category_id`: Comma-separated category IDs to filter by (e.g., `1,2`).
+  - `sub_category_id`: Comma-separated sub-category IDs to filter by.
+  - `brand_id`: Comma-separated brand IDs to filter by (e.g., `3,4`).
+  - `location_id`: Integer ID to filter products available at a specific location.
+  - `order_by`: Field to sort by (e.g., `product_name`, `newest`).
+  - `
+
+
 ### 3. Categories & Brands
 - **Endpoints:** GET `/connector/api/taxonomy` (Categories) and GET `/connector/api/brand`.
 - **Implementation:** These can be used as filter dropdowns on the Product list page, allowing users to browse products by specific brands or categories.

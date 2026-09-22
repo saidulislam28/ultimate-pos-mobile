@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, ActivityIndicator, useColorScheme, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, ActivityIndicator, useColorScheme, RefreshControl, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchProductsApi } from '@/api/product';
 import ProductCard, { Product } from '@/components/ProductCard';
@@ -23,6 +23,8 @@ export default function ProductsScreen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Debounce search
   useEffect(() => {
@@ -94,25 +96,42 @@ export default function ProductsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: themeColors.backgroundElement }]}>
       <View style={[styles.header, { backgroundColor: themeColors.background }]}>
-        <View style={[styles.searchContainer, { backgroundColor: themeColors.backgroundElement }]}>
-          <Ionicons name="search" size={20} color={themeColors.textSecondary} style={styles.searchIcon} />
-          <TextInput
-            style={[styles.searchInput, { color: themeColors.text }]}
-            placeholder="Search products..."
-            placeholderTextColor={themeColors.textSecondary}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            autoCapitalize="none"
-          />
-          {searchQuery.length > 0 && (
-            <Ionicons 
-              name="close-circle" 
-              size={20} 
-              color={themeColors.textSecondary} 
-              onPress={() => setSearchQuery('')} 
-              style={styles.clearIcon}
+        <View style={styles.headerRow}>
+          <View style={[styles.searchContainer, { backgroundColor: themeColors.backgroundElement }]}>
+            <Ionicons name="search" size={20} color={themeColors.textSecondary} style={styles.searchIcon} />
+            <TextInput
+              style={[styles.searchInput, { color: themeColors.text }]}
+              placeholder="Search products..."
+              placeholderTextColor={themeColors.textSecondary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoCapitalize="none"
             />
-          )}
+            {searchQuery.length > 0 && (
+              <Ionicons 
+                name="close-circle" 
+                size={20} 
+                color={themeColors.textSecondary} 
+                onPress={() => setSearchQuery('')} 
+                style={styles.clearIcon}
+              />
+            )}
+          </View>
+          
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="barcode-outline" size={22} color={themeColors.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="options-outline" size={22} color={themeColors.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.iconButton} 
+              onPress={() => setViewMode(prev => prev === 'grid' ? 'list' : 'grid')}
+            >
+              <Ionicons name={viewMode === 'grid' ? 'list-outline' : 'grid-outline'} size={22} color={themeColors.primary} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -122,14 +141,15 @@ export default function ProductsScreen() {
         </View>
       ) : (
         <FlatList
+          key={viewMode}
           data={products}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           renderItem={({ item }) => (
-            <View style={styles.cardWrapper}>
-              <ProductCard product={item} />
+            <View style={viewMode === 'grid' ? styles.cardWrapperGrid : styles.cardWrapperList}>
+              <ProductCard product={item} viewMode={viewMode} />
             </View>
           )}
-          numColumns={2}
+          numColumns={viewMode === 'grid' ? 2 : 1}
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={themeColors.primary} />
@@ -138,7 +158,7 @@ export default function ProductsScreen() {
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={renderEmpty}
-          columnWrapperStyle={styles.columnWrapper}
+          columnWrapperStyle={viewMode === 'grid' ? styles.columnWrapper : undefined}
         />
       )}
     </View>
@@ -162,12 +182,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     zIndex: 10,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   searchContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 12,
     paddingHorizontal: 12,
-    height: 48,
+    height: 44,
   },
   searchIcon: {
     marginRight: 8,
@@ -180,6 +206,18 @@ const styles = StyleSheet.create({
     height: '100%',
     fontSize: 16,
   },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 128, 82, 0.1)', // Light primary color for background
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   listContent: {
     padding: 8,
     paddingBottom: 24,
@@ -187,8 +225,11 @@ const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: 'space-between',
   },
-  cardWrapper: {
+  cardWrapperGrid: {
     flex: 0.5,
+  },
+  cardWrapperList: {
+    flex: 1,
   },
   centerContainer: {
     flex: 1,
