@@ -135,14 +135,11 @@ With the foundation built, we can connect the specific POS features using the Co
   - `sub_category_id`: Comma-separated sub-category IDs to filter by.
   - `brand_id`: Comma-separated brand IDs to filter by (e.g., `3,4`).
   - `location_id`: Integer ID to filter products available at a specific location.
-  - `order_by`: Field to sort by (e.g., `product_name`, `newest`).
-  - `
-
+  - `order_by`: Field to sort by (e.g., `product_name`, `newest`).`
 
 ### 3. Categories & Brands
 - **Endpoints:** GET `/connector/api/taxonomy` (Categories) and GET `/connector/api/brand`.
 - **Implementation:** These can be used as filter dropdowns on the Product list page, allowing users to browse products by specific brands or categories.
-
 ---
 
 ## Verification & Next Steps

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, ActivityIndicator, useColorScheme, RefreshControl, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { fetchProductsApi } from '@/api/product';
+import { fetchProductsApi, ProductFilters } from '@/api/product';
 import ProductCard, { Product } from '@/components/ProductCard';
+import ProductFilterDrawer from '@/components/ProductFilterDrawer';
 import { Colors } from '@/constants/theme';
 import { useAuthStore } from '@/store/authStore';
 
@@ -26,21 +27,25 @@ export default function ProductsScreen() {
 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
+  // Filter state
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [filters, setFilters] = useState<ProductFilters>({});
+
   // Debounce search
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      loadProducts(1, searchQuery);
+      loadProducts(1, searchQuery, filters);
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
+  }, [searchQuery, filters]);
 
-  const loadProducts = async (page: number, query: string) => {
+  const loadProducts = async (page: number, query: string, currentFilters: ProductFilters = filters) => {
     if (page === 1) setLoading(true);
     else setLoadingMore(true);
 
     try {
-      const response = await fetchProductsApi(page, query);
+      const response = await fetchProductsApi(page, query, currentFilters);
       
       // Defensively parse Laravel pagination (usually data.data or just data)
       const newProducts = response.data?.data || response.data || [];
@@ -65,13 +70,18 @@ export default function ProductsScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    loadProducts(1, searchQuery);
-  }, [searchQuery]);
+    loadProducts(1, searchQuery, filters);
+  }, [searchQuery, filters]);
 
   const handleLoadMore = () => {
     if (currentPage < lastPage && !loadingMore && !loading) {
-      loadProducts(currentPage + 1, searchQuery);
+      loadProducts(currentPage + 1, searchQuery, filters);
     }
+  };
+
+  const handleApplyFilters = (newFilters: ProductFilters) => {
+    setFilters(newFilters);
+    // The useEffect will automatically trigger loadProducts when `filters` changes
   };
 
   const renderFooter = () => {
@@ -122,9 +132,21 @@ export default function ProductsScreen() {
             <TouchableOpacity style={styles.iconButton}>
               <Ionicons name="barcode-outline" size={22} color={themeColors.primary} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="options-outline" size={22} color={themeColors.primary} />
+            
+            <TouchableOpacity 
+              style={[
+                styles.iconButton, 
+                (filters.brand_id || filters.category_id) && { backgroundColor: themeColors.primary }
+              ]} 
+              onPress={() => setIsFilterVisible(true)}
+            >
+              <Ionicons 
+                name="options-outline" 
+                size={22} 
+                color={(filters.brand_id || filters.category_id) ? '#fff' : themeColors.primary} 
+              />
             </TouchableOpacity>
+            
             <TouchableOpacity 
               style={styles.iconButton} 
               onPress={() => setViewMode(prev => prev === 'grid' ? 'list' : 'grid')}
@@ -134,6 +156,13 @@ export default function ProductsScreen() {
           </View>
         </View>
       </View>
+
+      <ProductFilterDrawer 
+        visible={isFilterVisible}
+        onClose={() => setIsFilterVisible(false)}
+        currentFilters={filters}
+        onApplyFilters={handleApplyFilters}
+      />
 
       {loading && !refreshing ? (
         <View style={styles.centerContainer}>
