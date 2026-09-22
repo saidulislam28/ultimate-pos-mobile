@@ -103,18 +103,18 @@ Set up a navigation guard in `app/_layout.tsx`. If the global state does not con
 In Ultimate POS, actions and visibility are dictated by permissions (e.g., `product.view`, `sell.create`).
 
 ### 1. Permission Utility
-Create a utility function `hasPermission(permissionName)` that checks if the requested permission exists in the user's permission array (stored in global state).
+Create a utility function `can(permissionName)` that checks if the requested permission exists in the user's permission array (stored in global state).
 
 ### 2. Conditional UI Rendering
 Wrap sensitive UI components or navigation links based on permissions.
 ```tsx
-{hasPermission('product.view') && (
+{can('product.view') && (
   <Button title="View Products" onPress={() => router.push('/products')} />
 )}
 ```
 If a user lacks permission, simply hide the button or display an "Access Denied" fallback.
 
----
+---@
 
 ## Phase 5: Implementing Basic Features
 

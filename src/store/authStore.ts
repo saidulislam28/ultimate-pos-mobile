@@ -2,9 +2,15 @@ import { create } from 'zustand';
 
 export interface User {
   id: number;
-  name: string;
+  first_name: string;
+  last_name?: string | null;
+  username: string;
   email: string;
-  // Other user fields
+  is_admin?: boolean;
+  business?: {
+    id: number;
+    name: string;
+  };
 }
 
 interface AuthState {
@@ -16,9 +22,10 @@ interface AuthState {
   setAuth: (token: string, user: User, permissions: string[]) => void;
   logout: () => void;
   setLoading: (status: boolean) => void;
+  can: (permissionName: string) => boolean;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
   user: null,
   permissions: [],
@@ -32,4 +39,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token: null, user: null, permissions: [], isAuthenticated: false, isLoading: false }),
     
   setLoading: (status) => set({ isLoading: status }),
+
+  can: (permissionName: string) => {
+    const { permissions, user } = get();
+    // Admin users typically bypass permission checks in POS systems
+    if (user?.is_admin) return true;
+    return permissions.includes(permissionName);
+  },
 }));
