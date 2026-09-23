@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import CommonHeader from '@/components/CommonHeader';
 import { fetchUsersApi } from '@/api/user';
+import { router } from 'expo-router';
 
 export default function UsersScreen() {
   const [users, setUsers] = useState<any[]>([]);
@@ -81,7 +82,11 @@ export default function UsersScreen() {
       .trim();
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity 
+        style={styles.card}
+        activeOpacity={0.7}
+        onPress={() => router.push(`/users/${item.id}`)}
+      >
         <View style={styles.cardHeader}>
           <View style={styles.userInfoContainer}>
             <View style={styles.avatar}>
@@ -116,7 +121,7 @@ export default function UsersScreen() {
             <Text style={styles.infoText}>{item.contact_no}</Text>
           </View>
         )}
-      </View>
+      </TouchableOpacity>
     );
   };
 

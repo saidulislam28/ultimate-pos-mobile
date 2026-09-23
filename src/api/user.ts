@@ -7,3 +7,8 @@ export const fetchUsersApi = async (page: number = 1, perPage?: number) => {
   const response = await apiClient.get('/user', { params });
   return response.data;
 };
+
+export const fetchUserDetails = async (id: string | number) => {
+  const response = await apiClient.get(`/user/${id}`);
+  return response.data;
+};
