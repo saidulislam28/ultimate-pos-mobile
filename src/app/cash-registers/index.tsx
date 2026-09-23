@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 import CommonHeader from '@/components/CommonHeader';
 import { fetchCashRegistersApi } from '@/api/cash-register';
 import { formatCurrency } from '@/utils/currencyFormatter';
+import { router } from 'expo-router';
 
 export default function CashRegistersScreen() {
   const [registers, setRegisters] = useState<any[]>([]);
@@ -90,7 +91,11 @@ export default function CashRegistersScreen() {
     const closedAt = item.closed_at ? new Date(item.closed_at).toLocaleString() : '-';
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity 
+        style={styles.card}
+        activeOpacity={0.7}
+        onPress={() => router.push(`/cash-registers/${item.id}`)}
+      >
         <View style={styles.cardHeader}>
           <View style={styles.titleRow}>
             <Ionicons name="cash-outline" size={20} color={Colors.PRIMARY_COLOR} />
@@ -128,7 +133,7 @@ export default function CashRegistersScreen() {
           </View>
         </View>
 
-      </View>
+      </TouchableOpacity>
     );
   };
 
