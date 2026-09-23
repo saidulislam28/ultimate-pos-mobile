@@ -11,6 +11,7 @@ const apiCategories = [
   { id: '2', title: 'Contacts (Customers & Suppliers)', link: '/contacts', icon: 'people-outline' },
   { id: '5', title: 'Expenses', link: '/expenses', icon: 'wallet-outline' },
   { id: '6', title: 'Users & Auth', link: '/users', icon: 'person-outline' },
+  { id: '8', title: 'Sell Return', link: '/sell-return', icon: 'return-up-back-outline' },
   { id: '7', title: 'Registers & Payments', link: '/registers', icon: 'cash-outline' },
   { id: '9', title: 'Subscription', link: '/subscription', icon: 'card-outline' },
 ];
@@ -34,14 +35,14 @@ export default function MoreScreen() {
     return name.charAt(0).toUpperCase();
   };
 
-  const displayName = user?.first_name 
-    ? `${user.first_name} ${user.last_name || ''}`.trim() 
+  const displayName = user?.first_name
+    ? `${user.first_name} ${user.last_name || ''}`.trim()
     : 'User';
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.backgroundElement }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
+
         {/* Profile Header */}
         <View style={[styles.profileHeader, { backgroundColor: themeColors.background }]}>
           <View style={[styles.avatar, { backgroundColor: themeColors.primary }]}>
@@ -64,13 +65,13 @@ export default function MoreScreen() {
           <Text style={[styles.sectionTitle, { color: themeColors.textSecondary }]}>API Modules</Text>
           <View style={[styles.card, { backgroundColor: themeColors.background }]}>
             {apiCategories.map((item, index) => (
-              <MenuItem 
+              <MenuItem
                 key={item.id}
-                icon={item.icon} 
-                title={item.title} 
+                icon={item.icon}
+                title={item.title}
                 link={item.link}
-                themeColors={themeColors} 
-                isLast={index === apiCategories.length - 1} 
+                themeColors={themeColors}
+                isLast={index === apiCategories.length - 1}
               />
             ))}
           </View>
@@ -92,7 +93,7 @@ export default function MoreScreen() {
 // Reusable menu item component
 function MenuItem({ icon, title, link, themeColors, isLast = false }: any) {
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.menuItem, !isLast && { borderBottomWidth: 1, borderBottomColor: themeColors.backgroundSelected }]}
       onPress={() => link && router.push(link)}
     >
