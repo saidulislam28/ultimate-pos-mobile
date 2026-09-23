@@ -17,6 +17,7 @@ const apiCategories = [
   { id: '7', title: 'Cash Registers', link: '/cash-registers', icon: 'cash-outline' },
   { id: '10', title: 'Payment Accounts', link: '/payment-accounts', icon: 'cash-outline' },
   { id: '11', title: 'Payment Methods', link: '/payment-methods', icon: 'cash-outline' },
+  { id: '14', title: 'POS (Add Sale)', link: '/pos', icon: 'calculator-outline' },
   { id: '9', title: 'Subscription', link: '/subscription', icon: 'card-outline' },
 ];
 

@@ -30,7 +30,8 @@ export const submitSaleApi = async (payload: SalePayload) => {
     ...payload,
   };
   
-  const response = await apiClient.post('/sell', finalPayload);
+  const requestPayload = { sells: [finalPayload] };
+  const response = await apiClient.post('/sell', requestPayload);
   return response.data;
 };
 
