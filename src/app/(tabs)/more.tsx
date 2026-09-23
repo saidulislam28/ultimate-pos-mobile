@@ -9,6 +9,8 @@ import { router } from 'expo-router';
 const apiCategories = [
   { id: '1', title: 'Business', link: '/business', icon: 'business-outline' },
   { id: '2', title: 'Contacts (Customers & Suppliers)', link: '/contacts', icon: 'people-outline' },
+  { id: '12', title: 'Brands', link: '/brands', icon: 'people-outline' },
+  { id: '13', title: 'Categories', link: '/categories', icon: 'people-outline' },
   { id: '5', title: 'Expenses', link: '/expenses', icon: 'wallet-outline' },
   { id: '6', title: 'Users & Auth', link: '/users', icon: 'person-outline' },
   { id: '8', title: 'Sell Return', link: '/sell-return', icon: 'return-up-back-outline' },
