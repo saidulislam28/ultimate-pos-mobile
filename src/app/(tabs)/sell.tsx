@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, useColorScheme, RefreshControl, SafeAreaView, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchSalesApi, SaleFilters } from '@/api/sell';
-import { Colors } from '@/constants/theme';
+import { Colors } from '@/constants/Colors';
 import { formatCurrency } from '@/utils/currencyFormatter';
 
 export default function SalesListScreen() {
+  const router = useRouter();
   const scheme = useColorScheme();
   const themeColors = Colors[scheme === 'dark' ? 'dark' : 'light'];
 
@@ -66,14 +68,18 @@ export default function SalesListScreen() {
       case 'paid': return '#4CAF50';
       case 'due': return '#F44336';
       case 'partial': return '#FF9800';
-      default: return themeColors.textSecondary;
+      default: return Colors.SUBTITLE_COLOR;
     }
   };
 
   const renderSaleItem = ({ item }: { item: any }) => (
-    <View style={[styles.saleCard, { backgroundColor: themeColors.background, borderColor: themeColors.backgroundElement }]}>
+    <TouchableOpacity 
+      style={[styles.saleCard, { backgroundColor: themeColors.background, borderColor: (themeColors as any).backgroundElement || '#eee' }]}
+      onPress={() => router.push(`/sell/${item.id}` as any)}
+      activeOpacity={0.7}
+    >
       <View style={styles.cardHeader}>
-        <Text style={[styles.invoiceNo, { color: themeColors.primary }]}>
+        <Text style={[styles.invoiceNo, { color: Colors.PRIMARY_COLOR }]}>
           {item.invoice_no || `INV-${item.id}`}
         </Text>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.payment_status) + '20' }]}>
@@ -85,33 +91,33 @@ export default function SalesListScreen() {
       
       <View style={styles.cardBody}>
         <View style={styles.infoRow}>
-          <Ionicons name="person-outline" size={16} color={themeColors.textSecondary} />
+          <Ionicons name="person-outline" size={16} color={Colors.SUBTITLE_COLOR} />
           <Text style={[styles.infoText, { color: themeColors.text }]}>
             {item.contact?.name || 'Walk-in Customer'}
           </Text>
         </View>
         <View style={styles.infoRow}>
-          <Ionicons name="calendar-outline" size={16} color={themeColors.textSecondary} />
-          <Text style={[styles.infoText, { color: themeColors.textSecondary }]}>
+          <Ionicons name="calendar-outline" size={16} color={Colors.SUBTITLE_COLOR} />
+          <Text style={[styles.infoText, { color: Colors.SUBTITLE_COLOR }]}>
             {item.transaction_date ? new Date(item.transaction_date).toLocaleDateString() : 'N/A'}
           </Text>
         </View>
       </View>
 
-      <View style={[styles.cardFooter, { borderTopColor: themeColors.backgroundElement }]}>
-        <Text style={[styles.totalLabel, { color: themeColors.textSecondary }]}>Total Amount</Text>
+      <View style={[styles.cardFooter, { borderTopColor: '#F0F0F3' }]}>
+        <Text style={[styles.totalLabel, { color: Colors.SUBTITLE_COLOR }]}>Total Amount</Text>
         <Text style={[styles.totalValue, { color: themeColors.text }]}>
           {formatCurrency(item.final_total || 0)}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   const renderFooter = () => {
     if (!loadingMore) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color={themeColors.primary} />
+        <ActivityIndicator size="small" color={Colors.PRIMARY_COLOR} />
       </View>
     );
   };
@@ -120,21 +126,21 @@ export default function SalesListScreen() {
     if (loading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="receipt-outline" size={48} color={themeColors.textSecondary} />
-        <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>No sales found</Text>
+        <Ionicons name="receipt-outline" size={48} color={Colors.SUBTITLE_COLOR} />
+        <Text style={[styles.emptyText, { color: Colors.SUBTITLE_COLOR }]}>No sales found</Text>
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.backgroundElement }]}>
-      <View style={[styles.header, { backgroundColor: themeColors.background, borderBottomColor: themeColors.backgroundElement }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: '#F0F0F3' }]}>
+      <View style={[styles.header, { backgroundColor: themeColors.background, borderBottomColor: '#F0F0F3' }]}>
         <Text style={[styles.headerTitle, { color: themeColors.text }]}>Sales History</Text>
       </View>
 
       {loading && !refreshing ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={themeColors.primary} />
+          <ActivityIndicator size="large" color={Colors.PRIMARY_COLOR} />
         </View>
       ) : (
         <FlatList
@@ -153,8 +159,8 @@ export default function SalesListScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={themeColors.primary}
-              colors={[themeColors.primary]}
+              tintColor={Colors.PRIMARY_COLOR}
+              colors={[Colors.PRIMARY_COLOR]}
             />
           }
         />

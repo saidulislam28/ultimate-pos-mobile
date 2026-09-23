@@ -54,3 +54,8 @@ export const fetchSalesApi = async (page: number = 1, filters?: SaleFilters) => 
   const response = await apiClient.get(url);
   return response.data;
 };
+
+export const fetchSaleDetailsApi = async (id: string | number) => {
+  const response = await apiClient.get(`/sell/${id}`);
+  return response.data;
+};

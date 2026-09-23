@@ -23,7 +23,6 @@ apiClient.interceptors.request.use(
       }
       config.headers.Accept = 'application/json';
       console.log(`[API Request] ${config.baseURL}${config.url}`);
-      console.log(`[API Request Headers]`, config.headers);
     } catch (error) {
       console.error('Error fetching token from SecureStore', error);
     }
