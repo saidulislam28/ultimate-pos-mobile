@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, useColorScheme, Re
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchSalesApi, SaleFilters } from '@/api/sell';
-import { Colors } from '@/constants/Colors';
+import { COLORS, Colors } from '@/constants/Colors';
 import { formatCurrency } from '@/utils/currencyFormatter';
 
 export default function SalesListScreen() {
@@ -14,7 +14,7 @@ export default function SalesListScreen() {
   const [sales, setSales] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -34,7 +34,7 @@ export default function SalesListScreen() {
       const response = await fetchSalesApi(page, currentFilters);
       const newSales = response.data?.data || response.data || [];
       const meta = response.meta || response.data?.meta || {};
-      
+
       if (page === 1) {
         setSales(newSales);
       } else {
@@ -73,7 +73,7 @@ export default function SalesListScreen() {
   };
 
   const renderSaleItem = ({ item }: { item: any }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.saleCard, { backgroundColor: themeColors.background, borderColor: (themeColors as any).backgroundElement || '#eee' }]}
       onPress={() => router.push(`/sell/${item.id}` as any)}
       activeOpacity={0.7}
@@ -88,7 +88,7 @@ export default function SalesListScreen() {
           </Text>
         </View>
       </View>
-      
+
       <View style={styles.cardBody}>
         <View style={styles.infoRow}>
           <Ionicons name="person-outline" size={16} color={Colors.SUBTITLE_COLOR} />
@@ -134,8 +134,11 @@ export default function SalesListScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: '#F0F0F3' }]}>
-      <View style={[styles.header, { backgroundColor: themeColors.background, borderBottomColor: '#F0F0F3' }]}>
+      <View style={[styles.header, { backgroundColor: themeColors.background, borderBottomColor: '#F0F0F3', flexDirection: 'row', justifyContent: 'space-between' }]}>
         <Text style={[styles.headerTitle, { color: themeColors.text }]}>Sales History</Text>
+        <TouchableOpacity onPress={() => router.push('/sell-return' as any)}>
+          <Ionicons name="return-down-back-outline" size={24} color={COLORS.primary} />
+        </TouchableOpacity>
       </View>
 
       {loading && !refreshing ? (
@@ -177,6 +180,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     alignItems: 'center',
+    paddingTop: 50
   },
   headerTitle: {
     fontSize: 20,

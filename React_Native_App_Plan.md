@@ -190,7 +190,7 @@ Below is a comprehensive list of the available endpoints in the Connector API (`
 | `/product/{id}` | GET | Get a specific product. | `id` (path param) |
 | `/selling-price-group` | GET | List selling price groups. | None |
 | `/variation/{id?}` | GET | List variations for a product. | `id` (path param - product id) |
-| `/product-stock-report` | GET | Get product stock report. | `location_id`, `category_id`, `brand_id` |
+# | `/product-stock-report` | GET | Get product stock report. | `location_id`, `category_id`, `brand_id` |
 | `/new_product` | GET | Get necessary data to create a product. | None |
 
 ### 4. Sales & POS
