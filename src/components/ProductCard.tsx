@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, useColorScheme, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/theme';
+import { Colors } from '@/constants/Colors';
 import { formatCurrency, CurrencyData } from '@/utils/currencyFormatter';
 
 export interface Product {
@@ -27,7 +27,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, currencyConfig, viewMode = 'grid', onPress }: ProductCardProps) {
   const colorScheme = useColorScheme() ?? 'light';
-  const themeColors = Colors[colorScheme];
+  const themeColors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
   const [imageError, setImageError] = useState(false);
 
   // Defensive mappings
@@ -40,6 +40,24 @@ export default function ProductCard({ product, currencyConfig, viewMode = 'grid'
                   (product.product_variations?.[0]?.variations?.[0]?.sell_price_inc_tax) || 0;
   
   const formattedPrice = formatCurrency(rawPrice, currencyConfig);
+
+  // Stock Calculation
+  let totalStock = 0;
+  if (product.product_variations && Array.isArray(product.product_variations)) {
+    product.product_variations.forEach((pv: any) => {
+      if (pv.variations && Array.isArray(pv.variations)) {
+        pv.variations.forEach((v: any) => {
+          totalStock += Number(v.total_qty_available || 0);
+        });
+      }
+    });
+  } else if (product.stock !== undefined) {
+    totalStock = Number(product.stock);
+  }
+
+  const alertQty = Number(product.alert_quantity || 0);
+  const isLowStock = totalStock <= alertQty;
+  const isOutOfStock = totalStock === 0;
 
   const isList = viewMode === 'list';
 
@@ -54,10 +72,12 @@ export default function ProductCard({ product, currencyConfig, viewMode = 'grid'
       style={[
         styles.container, 
         isList && styles.containerList,
-        { backgroundColor: themeColors.background, borderColor: themeColors.backgroundSelected }
+        { backgroundColor: themeColors.background, borderColor: (themeColors as any).backgroundSelected || '#eee' },
+        isOutOfStock && { opacity: 0.6 }
       ]} 
       onPress={() => onPress && onPress(product)}
       activeOpacity={0.7}
+      disabled={isOutOfStock}
     >
       <View style={[styles.imageContainer, isList && styles.imageContainerList]}>
         <Image 
@@ -73,13 +93,16 @@ export default function ProductCard({ product, currencyConfig, viewMode = 'grid'
           <Text style={[styles.name, isList && styles.nameList, { color: themeColors.text }]} numberOfLines={isList ? 1 : 2}>
             {name}
           </Text>
-          <Text style={[styles.sku, isList && styles.skuList, { color: themeColors.textSecondary }]}>
+          <Text style={[styles.sku, isList && styles.skuList, { color: Colors.SUBTITLE_COLOR }]}>
             SKU: {sku}
+          </Text>
+          <Text style={[styles.stock, { color: isLowStock ? '#F44336' : Colors.SUBTITLE_COLOR }]}>
+            Stock: {totalStock} {isOutOfStock && '(Out of Stock)'}
           </Text>
         </View>
         
         <View style={[styles.bottomRow, isList && styles.bottomRowList]}>
-          <Text style={[styles.price, isList && styles.priceList, { color: themeColors.primary }]}>
+          <Text style={[styles.price, isList && styles.priceList, { color: Colors.PRIMARY_COLOR }]}>
             {formattedPrice}
           </Text>
         </View>
@@ -150,10 +173,15 @@ const styles = StyleSheet.create({
   },
   sku: {
     fontSize: 12,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   skuList: {
-    marginBottom: 0,
+    marginBottom: 2,
+  },
+  stock: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 8,
   },
   bottomRow: {
     flexDirection: 'row',
