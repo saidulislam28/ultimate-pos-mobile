@@ -70,7 +70,7 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
     } else {
       // Fallback timeout in case animation callback drops
       const timeout = setTimeout(() => setShowModal(false), 300);
-      
+
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: width,
@@ -101,7 +101,7 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
 
       const parsedCats = catsRes?.data?.data || catsRes?.data || [];
       const parsedBrands = brandsRes?.data?.data || brandsRes?.data || [];
-      
+
       setCategories(parsedCats);
       setBrands(parsedBrands);
     } catch (error) {
@@ -113,14 +113,14 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
 
   const toggleCategory = (id: string | number) => {
     const idStr = id.toString();
-    setSelectedCategories(prev => 
+    setSelectedCategories(prev =>
       prev.includes(idStr) ? prev.filter(i => i !== idStr) : [...prev, idStr]
     );
   };
 
   const toggleBrand = (id: string | number) => {
     const idStr = id.toString();
-    setSelectedBrands(prev => 
+    setSelectedBrands(prev =>
       prev.includes(idStr) ? prev.filter(i => i !== idStr) : [...prev, idStr]
     );
   };
@@ -139,14 +139,14 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
   };
 
   const renderFilterItem = (item: FilterItem, isSelected: boolean, onToggle: (id: string | number) => void) => (
-    <TouchableOpacity 
-      key={item.id} 
-      style={[styles.filterItem, { borderBottomColor: themeColors.backgroundSelected }]} 
+    <TouchableOpacity
+      key={item.id}
+      style={[styles.filterItem, { borderBottomColor: themeColors.backgroundSelected }]}
       onPress={() => onToggle(item.id)}
     >
       <Text style={[styles.filterText, { color: themeColors.text }]}>{item.name}</Text>
       <View style={[
-        styles.checkbox, 
+        styles.checkbox,
         { borderColor: themeColors.textSecondary },
         isSelected && { backgroundColor: themeColors.primary, borderColor: themeColors.primary }
       ]}>
@@ -161,11 +161,11 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
         <Animated.View style={[styles.overlayBackgroundWrapper, { opacity: fadeAnim }]}>
           <TouchableOpacity style={styles.overlayBackground} onPress={onClose} activeOpacity={1} />
         </Animated.View>
-        
-        <Animated.View 
+
+        <Animated.View
           style={[
-            styles.drawer, 
-            { 
+            styles.drawer,
+            {
               backgroundColor: themeColors.background,
               transform: [{ translateX: slideAnim }]
             }
@@ -174,8 +174,8 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
           <SafeAreaView style={styles.safeArea}>
             <View style={[styles.header, { borderBottomColor: themeColors.backgroundElement }]}>
               <Text style={[styles.headerTitle, { color: themeColors.text }]}>Filters</Text>
-              <TouchableOpacity 
-                onPress={onClose} 
+              <TouchableOpacity
+                onPress={onClose}
                 hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 style={{ padding: 4 }}
               >
@@ -189,20 +189,20 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
               </View>
             ) : (
               <ScrollView style={styles.content}>
-                
+
                 {/* Categories Accordion */}
                 <View style={styles.accordionGroup}>
-                  <TouchableOpacity 
-                    style={[styles.accordionHeader, { backgroundColor: themeColors.backgroundElement }]} 
+                  <TouchableOpacity
+                    style={[styles.accordionHeader, { backgroundColor: themeColors.backgroundElement }]}
                     onPress={() => setIsCategoriesExpanded(!isCategoriesExpanded)}
                   >
                     <Text style={[styles.accordionTitle, { color: themeColors.text }]}>Categories</Text>
                     <Ionicons name={isCategoriesExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={themeColors.textSecondary} />
                   </TouchableOpacity>
-                  
+
                   {isCategoriesExpanded && (
                     <View style={styles.accordionContent}>
-                      {categories.map(cat => 
+                      {categories.map(cat =>
                         renderFilterItem(cat, selectedCategories.includes(cat.id.toString()), toggleCategory)
                       )}
                       {categories.length === 0 && (
@@ -214,17 +214,17 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
 
                 {/* Brands Accordion */}
                 <View style={styles.accordionGroup}>
-                  <TouchableOpacity 
-                    style={[styles.accordionHeader, { backgroundColor: themeColors.backgroundElement }]} 
+                  <TouchableOpacity
+                    style={[styles.accordionHeader, { backgroundColor: themeColors.backgroundElement }]}
                     onPress={() => setIsBrandsExpanded(!isBrandsExpanded)}
                   >
                     <Text style={[styles.accordionTitle, { color: themeColors.text }]}>Brands</Text>
                     <Ionicons name={isBrandsExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={themeColors.textSecondary} />
                   </TouchableOpacity>
-                  
+
                   {isBrandsExpanded && (
                     <View style={styles.accordionContent}>
-                      {brands.map(brand => 
+                      {brands.map(brand =>
                         renderFilterItem(brand, selectedBrands.includes(brand.id.toString()), toggleBrand)
                       )}
                       {brands.length === 0 && (
@@ -233,7 +233,7 @@ export default function ProductFilterDrawer({ visible, onClose, currentFilters, 
                     </View>
                   )}
                 </View>
-                
+
               </ScrollView>
             )}
 
@@ -283,6 +283,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
+    paddingTop: 44
   },
   headerTitle: {
     fontSize: 20,
@@ -352,7 +353,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   applyButton: {
-    
+
   },
   buttonText: {
     fontSize: 16,
