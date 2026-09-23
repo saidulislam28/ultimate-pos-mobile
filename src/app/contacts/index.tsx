@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 import CommonHeader from '@/components/CommonHeader';
 import { fetchContactsApi, ContactFilters } from '@/api/contact';
 import { formatCurrency } from '@/utils/currencyFormatter';
+import { router } from 'expo-router';
 
 export default function ContactsScreen() {
   const [contacts, setContacts] = useState<any[]>([]);
@@ -92,7 +93,11 @@ export default function ContactsScreen() {
     const isActive = item.contact_status === 'active';
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity 
+        style={styles.card}
+        activeOpacity={0.7}
+        onPress={() => router.push(`/contacts/${item.id}`)}
+      >
         <View style={styles.cardHeader}>
           <View style={[styles.avatar, { backgroundColor: isSupplier ? '#E3F2FD' : '#F3E5F5' }]}>
             {isSupplier ? (
@@ -135,7 +140,7 @@ export default function ContactsScreen() {
             </Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

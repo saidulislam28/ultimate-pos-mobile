@@ -13,3 +13,8 @@ export const fetchContactsApi = async (page: number = 1, filters?: ContactFilter
   const response = await apiClient.get('/contactapi', { params });
   return response.data;
 };
+
+export const fetchContactDetails = async (id: string | number) => {
+  const response = await apiClient.get(`/contactapi/${id}`);
+  return response.data;
+};
