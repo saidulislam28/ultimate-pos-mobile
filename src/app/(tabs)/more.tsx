@@ -13,6 +13,7 @@ const apiCategories = [
   { id: '6', title: 'Users & Auth', link: '/users', icon: 'person-outline' },
   { id: '8', title: 'Sell Return', link: '/sell-return', icon: 'return-up-back-outline' },
   { id: '7', title: 'Cash Registers', link: '/cash-registers', icon: 'cash-outline' },
+  { id: '10', title: 'Payment Accounts', link: '/payment-accounts', icon: 'cash-outline' },
   { id: '9', title: 'Subscription', link: '/subscription', icon: 'card-outline' },
 ];
 
