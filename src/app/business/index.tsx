@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import CommonHeader from '@/components/CommonHeader';
 import { fetchBusinessLocations } from '@/api/business';
+import { router } from 'expo-router';
 
 export default function BusinessLocationsScreen() {
   const [locations, setLocations] = useState<any[]>([]);
@@ -62,7 +63,11 @@ export default function BusinessLocationsScreen() {
     const fullAddress = addressParts.join(', ');
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity 
+        style={styles.card} 
+        activeOpacity={0.7}
+        onPress={() => router.push(`/business/${item.id}`)}
+      >
         <View style={styles.cardHeader}>
           <View style={styles.titleContainer}>
             <Ionicons name="business" size={24} color={Colors.PRIMARY_COLOR} />
@@ -97,7 +102,7 @@ export default function BusinessLocationsScreen() {
         )}
 
         {renderPaymentMethods(item.payment_methods)}
-      </View>
+      </TouchableOpacity>
     );
   };
 
