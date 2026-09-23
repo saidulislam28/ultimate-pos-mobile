@@ -4,8 +4,18 @@ import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import { useAuthStore } from '@/store/authStore';
 import { Colors } from '@/constants/theme';
+import { router } from 'expo-router';
 
-export default function AccountScreen() {
+const apiCategories = [
+  { id: '1', title: 'Business', link: '/business', icon: 'business-outline' },
+  { id: '2', title: 'Contacts (Customers & Suppliers)', link: '/contacts', icon: 'people-outline' },
+  { id: '5', title: 'Expenses', link: '/expenses', icon: 'wallet-outline' },
+  { id: '6', title: 'Users & Auth', link: '/users', icon: 'person-outline' },
+  { id: '7', title: 'Registers & Payments', link: '/registers', icon: 'cash-outline' },
+  { id: '9', title: 'Subscription', link: '/subscription', icon: 'card-outline' },
+];
+
+export default function MoreScreen() {
   const { user, logout } = useAuthStore();
   const colorScheme = useColorScheme() ?? 'light';
   const themeColors = Colors[colorScheme];
@@ -49,22 +59,20 @@ export default function AccountScreen() {
           </View>
         </View>
 
-        {/* Dummy Navigations */}
+        {/* API Navigations */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: themeColors.textSecondary }]}>Preferences</Text>
+          <Text style={[styles.sectionTitle, { color: themeColors.textSecondary }]}>API Modules</Text>
           <View style={[styles.card, { backgroundColor: themeColors.background }]}>
-            <MenuItem icon="person-outline" title="Edit Profile" themeColors={themeColors} />
-            <MenuItem icon="settings-outline" title="App Settings" themeColors={themeColors} />
-            <MenuItem icon="notifications-outline" title="Notifications" themeColors={themeColors} />
-            <MenuItem icon="lock-closed-outline" title="Privacy & Security" themeColors={themeColors} isLast />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: themeColors.textSecondary }]}>Support</Text>
-          <View style={[styles.card, { backgroundColor: themeColors.background }]}>
-            <MenuItem icon="help-circle-outline" title="Help Center" themeColors={themeColors} />
-            <MenuItem icon="document-text-outline" title="Terms of Service" themeColors={themeColors} isLast />
+            {apiCategories.map((item, index) => (
+              <MenuItem 
+                key={item.id}
+                icon={item.icon} 
+                title={item.title} 
+                link={item.link}
+                themeColors={themeColors} 
+                isLast={index === apiCategories.length - 1} 
+              />
+            ))}
           </View>
         </View>
 
@@ -82,9 +90,12 @@ export default function AccountScreen() {
 }
 
 // Reusable menu item component
-function MenuItem({ icon, title, themeColors, isLast = false }: any) {
+function MenuItem({ icon, title, link, themeColors, isLast = false }: any) {
   return (
-    <TouchableOpacity style={[styles.menuItem, !isLast && { borderBottomWidth: 1, borderBottomColor: themeColors.backgroundSelected }]}>
+    <TouchableOpacity 
+      style={[styles.menuItem, !isLast && { borderBottomWidth: 1, borderBottomColor: themeColors.backgroundSelected }]}
+      onPress={() => link && router.push(link)}
+    >
       <View style={styles.menuItemLeft}>
         <Ionicons name={icon} size={22} color={themeColors.text} style={styles.menuIcon} />
         <Text style={[styles.menuItemText, { color: themeColors.text }]}>{title}</Text>

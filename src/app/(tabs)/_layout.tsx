@@ -24,7 +24,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="sell"
         options={{
-          title: 'Sale',
+          title: 'Sell',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="cash-outline" color={color} size={size} />
           )
@@ -40,11 +40,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="account"
+        name="more"
         options={{
-          title: 'Account',
+          title: 'More',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" color={color} size={size} />
+            <Ionicons name="ellipsis-horizontal" color={color} size={size} />
           )
         }}
       />
