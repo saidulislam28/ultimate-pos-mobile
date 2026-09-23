@@ -53,8 +53,7 @@ export default function ProductSearch() {
       discount_type: 'fixed',
       discount_amount: 0,
       enable_stock: product.enable_stock === 1,
-      // For a real stock check, this might come from the API payload depending on your backend
-      // qty_available: ..., 
+      qty_available: parseFloat(product.total_qty_available || '0'),
     };
 
     addToCart(cartItem);
@@ -94,12 +93,30 @@ export default function ProductSearch() {
               keyExtractor={(item) => item.id.toString()}
               keyboardShouldPersistTaps="handled"
               style={{ maxHeight: 200 }}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.resultItem} onPress={() => handleSelectProduct(item)}>
-                  <Text style={styles.resultName}>{item.name}</Text>
-                  {item.sku && <Text style={styles.resultSku}>SKU: {item.sku}</Text>}
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const qty = parseFloat(item.total_qty_available || '0');
+                const outOfStock = item.enable_stock === 1 && qty <= 0;
+                
+                return (
+                  <TouchableOpacity 
+                    style={[styles.resultItem, outOfStock && styles.resultItemDisabled]} 
+                    onPress={() => handleSelectProduct(item)}
+                    disabled={outOfStock}
+                  >
+                    <View style={styles.resultItemHeader}>
+                      <Text style={[styles.resultName, outOfStock && styles.textDisabled]}>{item.name}</Text>
+                      {item.enable_stock === 1 && (
+                        <View style={[styles.stockBadge, outOfStock ? styles.outOfStockBadge : styles.inStockBadge]}>
+                          <Text style={[styles.stockText, outOfStock ? styles.outOfStockText : styles.inStockText]}>
+                            {outOfStock ? 'Out of Stock' : `Qty: ${qty}`}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                    {item.sku && <Text style={[styles.resultSku, outOfStock && styles.textDisabled]}>SKU: {item.sku}</Text>}
+                  </TouchableOpacity>
+                );
+              }}
             />
           ) : !loading ? (
             <View style={styles.noResults}>
@@ -167,10 +184,44 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
   },
+  resultItemDisabled: {
+    backgroundColor: '#FAFAFA',
+  },
+  resultItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
   resultName: {
     fontSize: 15,
     fontWeight: '600',
     color: '#1C1C1E',
+    flex: 1,
+    marginRight: 8,
+  },
+  textDisabled: {
+    color: '#9E9E9E',
+  },
+  stockBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  inStockBadge: {
+    backgroundColor: '#E8F5E9',
+  },
+  outOfStockBadge: {
+    backgroundColor: '#FFEBEE',
+  },
+  stockText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  inStockText: {
+    color: '#2E7D32',
+  },
+  outOfStockText: {
+    color: '#C62828',
   },
   resultSku: {
     fontSize: 13,
